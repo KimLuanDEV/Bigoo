@@ -3,14 +3,13 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve toàn bộ file tĩnh
-app.use(express.static(__dirname));
+// Nếu file ở thư mục con, ví dụ 'public', thay 'public' vào đây:
+app.use(express.static(path.join(__dirname, 'Game')));
 
-// Nếu không tìm thấy file -> trả về index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'Game', 'Greedy'));
 });
 
 app.listen(PORT, () => {
-    console.log(`Server chạy tại http://localhost:${PORT}`);
+    console.log(`✅ Server chạy tại http://localhost:${PORT}`);
 });
