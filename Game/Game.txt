@@ -1,0 +1,1134 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Giao diện người dùng - Trung tâm trò chơi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --bg:#0f1724;
+    --card:#0b1220;
+    --accent:#6ee7b7;
+    --muted:#94a3b8;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+
+
+  body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#071025 0%, #071633 100%);
+    color:#e6eef8;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+  }
+
+  .app{
+    width:100%;
+    max-width:420px; /* rộng hơn */
+  }
+
+  /* Sidebar */
+  .sidebar{
+    background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius:20px;
+    padding:30px;
+    box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .profile{
+    display:flex;
+    gap:20px;
+    align-items:center;
+  }
+
+  .avatar{
+    width:100px;height:100px;border-radius:20px;overflow:hidden;flex:0 0 100px;
+    background:linear-gradient(135deg,#0ea5a4,#3b82f6);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;color:white;
+    cursor: pointer;
+  }
+
+  .user-info{
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .user-info .name{font-weight:700;font-size:22px}
+  .user-info .id{font-size:14px;color:var(--muted)}
+
+  .wallet{
+    background:var(--glass);
+    padding:18px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;
+    backdrop-filter: blur(8px);
+  }
+  .wallet .amount{font-weight:700;font-size:24px}
+  .wallet .unit{font-size:14px;color:var(--muted)}
+
+  .nav{
+    display:flex;flex-direction:column;gap:12px;padding-top:8px;
+  }
+  .nav button{
+    text-align:left;padding:14px 16px;border-radius:12px;border:0;background:transparent;color:inherit;cursor:pointer;
+    display:flex;gap:14px;align-items:center;font-weight:600;font-size:16px;
+    transition: background 0.2s;
+  }
+  .nav button:hover{background:rgba(255,255,255,0.05)}
+
+  .logout{
+    margin-top:auto;display:flex;gap:12px;align-items:center;justify-content:space-between
+  }
+  .logout button{
+    background:#ef4444;padding:12px 16px;border-radius:12px;border:0;color:white;font-weight:700;cursor:pointer;
+    font-size:14px;
+    transition: opacity 0.2s;
+  }
+  .logout button:hover{
+    opacity:0.9;
+  }
+
+  /* Nút nạp */
+  #addCoin{
+    margin-top:8px;padding:8px 12px;border-radius:10px;border:0;background:#0ea5a4;color:#022;font-weight:700;cursor:pointer;
+    font-size:14px;
+    transition: opacity 0.2s;
+  }
+  #addCoin:hover{
+    opacity:0.9;
+  }
+
+
+
+/* Giao diện danh sách game */
+.game-list{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(7,16,37,0.85); /* hơi trong suốt để thấy nền mờ */
+  border-radius:16px;
+  padding:20px;
+  overflow-y:auto;
+  z-index:5;
+/* Hiệu ứng trượt */
+  transform:translateX(100%);
+  opacity:0;
+  transition:transform 0.4s ease, opacity 0.4s ease;
+}
+
+.game-list.show{
+  transform:translateX(0);
+  opacity:1;
+}
+
+.game-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+.game-header h2{
+  font-size:26px;
+  font-weight:700;
+}
+.close-btn{
+  background:#ef4444;
+  border:none;
+  color:white;
+  font-weight:700;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+  transition:background 0.2s;
+}
+.close-btn:hover{
+  background:#d62828;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* rộng hơn và đều */
+  gap: 24px; /* khoảng cách đẹp hơn */
+  padding-bottom: 20px;
+}
+
+
+
+.game-card {
+  background: #1c2333;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* các card cao bằng nhau */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.55);
+}
+
+.game-img {
+  width: 100%;
+  height: 160px; /* cao hơn để ảnh nổi bật */
+  background-size: cover;
+  background-position: center;
+}
+
+.game-info {
+  padding: 14px;
+  text-align: center;
+  flex: 1; /* đẩy đều nội dung */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.game-info h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.game-info p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Thanh cuộn ẩn */
+.game-list::-webkit-scrollbar{
+  width:6px;
+}
+.game-list::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,0.1);
+  border-radius:4px;
+}
+
+
+  /* Giao diện nạp xu */
+  .recharge-screen {
+    display:none;
+    background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius:20px;
+    padding:30px;
+    box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+    flex-direction:column;
+    gap:20px;
+    width:100%;
+    max-width:420px;
+  }
+  .bank-list {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .bank-item {
+    background:var(--glass);
+    padding:10px;
+    border-radius:12px;
+    text-align:center;
+    cursor:pointer;
+    border:2px solid transparent;
+    transition:0.2s;
+  }
+  .bank-item.selected {
+    border-color:var(--accent);
+    background:rgba(110,231,183,0.1);
+  }
+  .bank-item img {
+    width:60px;
+    height:60px;
+    object-fit:contain;
+  }
+  .input-amount {
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+    width:100%;
+  }
+  .confirm-btn {
+    background:#0ea5a4;
+    padding:12px;
+    border-radius:10px;
+    border:0;
+    font-weight:700;
+    cursor:pointer;
+    color:#022;
+    font-size:16px;
+  }
+  .back-btn {
+    background:#3b82f6;
+    padding:8px 12px;
+    border-radius:10px;
+    border:0;
+    font-weight:700;
+    cursor:pointer;
+    color:#fff;
+    width:fit-content;
+  }
+  .payment-info {
+    background:rgba(255,255,255,0.05);
+    padding:15px;
+    border-radius:10px;
+    line-height:1.6;
+  }
+
+/* Giao diện lịch sử nạp tiền */
+  .history-screen {
+    display: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 420px;
+  }
+  .history-list {
+    background: rgba(255,255,255,0.05);
+    padding: 12px;
+    border-radius: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .history-item {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 8px 0;
+    font-size: 14px;
+  }
+  .history-item:last-child {
+    border-bottom: none;
+  }
+
+.settings-screen {
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border-radius:20px;
+  padding:30px;
+  box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+  flex-direction:column;
+  gap:15px;
+  width:100%;
+  max-width:420px;
+}
+.settings-screen label {
+  font-size:14px;
+  color:var(--muted);
+  margin-top:5px;
+}
+.settings-screen input {
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:16px;
+  width:100%;
+}
+
+
+.gift-screen {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.gift-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.gift-item {
+  display: flex;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  padding: 12px;
+  border-radius: 12px;
+  align-items: center;
+}
+
+.gift-item img {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.gift-info {
+  flex: 1;
+}
+
+.gift-info h3 {
+  margin: 0 0 5px;
+}
+
+.gift-info p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+
+</style>
+</head>
+
+<body>
+  <div class="app" role="application" aria-label="Trung tâm trò chơi">
+
+    <aside class="sidebar" id="mainScreen" aria-label="Thanh bên người dùng">
+	
+
+      <div class="profile">
+        <div class="avatar" id="avatar">
+  <img id="avatarImg" src="" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:none;">
+  <span id="avatarText"></span>
+</div>
+<input type="file" id="avatarInput" accept="image/*" style="display:none;">
+
+
+        <div class="user-info">
+          <div class="name" id="username">KimDogCat</div>
+          <div class="id" id="userid">ID: 000888</div>
+        </div>
+      </div>
+
+      <div class="wallet" role="region" aria-label="Ví tiền">
+        <div>
+          <div style="font-size:12px;color:var(--muted)">Số dư</div>
+          <div class="amount" id="balance">0</div>
+        </div>
+        <div style="text-align:right">
+          <button id="addCoin" style="margin-top:6px;padding:6px 8px;border-radius:8px;border:0;background:#0ea5a4;color:#022;font-weight:700;cursor:pointer">Nạp</button>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Điều hướng">
+        <button onclick="openPanel('home')">🎁 Đổi quà hiện vật</button>
+        <button onclick="openPanel('games')">🎮 Trung tâm trò chơi</button>
+        <button onclick="openPanel('history')">📜 Lịch sử</button>
+        <button onclick="openPanel('settings')">⚙️ Cài đặt</button>
+      </nav>
+
+      <div class="logout">
+        <div style="font-size:13px;color:var(--muted)">Đăng nhập lần cuối: 1 phút trước</div>
+        <button id="logoutBtn">Đăng xuất</button>
+      </div>
+    </aside>
+  </div>
+
+
+<!-- Danh sách trò chơi -->
+<div class="game-list" id="gameList">
+  <div class="game-header">
+    <h2>🎮 Trung tâm trò chơi</h2>
+    <button class="close-btn" onclick="closeGameList()">✖</button>
+  </div>
+  <div class="games-grid">
+    <div class="game-card">
+      <div class="game-img" style="background-image:url('<a href="https://imgbb.com/"><img src="https://i.ibb.co/Jj45cjyn/result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-2.jpg" alt="result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-2" border="0"></a>');"></div>
+      <div class="game-info">
+        <h3>Greedy (Hot🔥)</h3>
+        <p>Vòng quay rau củ!</p>
+      </div>
+    </div>
+    <div class="game-card">
+      <div class="game-img" style="background-image:url('<a href="https://imgbb.com/"><img src="https://i.ibb.co/tPBch1M3/result-result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-1.jpg" alt="result-result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-1" border="0"></a>');"></div>
+      <div class="game-info">
+        <h3>Yummy</h3>
+        <p>Săn Jackpot, thử vận may!</p>
+      </div>
+    </div>
+    <div class="game-card">
+      <div class="game-img" style="background-image:url('<a href="https://imgbb.com/"><img src="https://i.ibb.co/cSnQxW3J/result-z6900446085771-3cc854fb75f1290aeef0b58a71f49f06.jpg" alt="result-z6900446085771-3cc854fb75f1290aeef0b58a71f49f06" border="0"></a>');"></div>
+      <div class="game-info">
+        <h3>Cat or Dog</h3>
+        <p>Lên sàn đấu cùng Tom vs Tyson!</p>
+      </div>
+    </div>
+    <div class="game-card">
+      <div class="game-img" style="background-image:url('<a href="https://imgbb.com/"><img src="https://i.ibb.co/jv6dtns4/result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-3.jpg" alt="result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-3" border="0"></a>');"></div>
+      <div class="game-info">
+        <h3>Crash </h3>
+        <p>Bay lên nào!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="history-screen" id="historyScreen">
+  <button class="back-btn" id="backHistoryBtn">⬅ Quay lại</button>
+  <h2>📜 Lịch sử</h2>
+  <div style="display:flex;gap:10px;margin-bottom:10px;">
+    <button class="confirm-btn" id="tabRecharge">💰 Nạp xu</button>
+    <button class="confirm-btn" id="tabGift">🎁 Đổi thưởng</button>
+  </div>
+  <div class="history-list" id="historyList"></div>
+</div>
+
+
+
+<div class="settings-screen" id="settingsScreen" style="display:none;">
+  <button class="back-btn" id="backSettingsBtn">⬅ Quay lại</button>
+  <h2>🔗 Liên kết tài khoản</h2>
+  
+  <label>Số điện thoại</label>
+  <input type="text" id="linkPhone" class="input-amount" placeholder="Nhập số điện thoại">
+
+  <label>Email</label>
+  <input type="email" id="linkEmail" class="input-amount" placeholder="Nhập email">
+
+
+<!-- Trường nhập OTP (ẩn ban đầu) -->
+<div id="otpSection" style="display:none;">
+  <label>Nhập mã OTP</label>
+  <input type="text" id="otpCode" class="input-amount" placeholder="Nhập OTP">
+</div>
+
+<!-- Nút xác nhận -->
+  <button class="confirm-btn" id="confirmLinkBtn" style="margin-top:15px;">Xác nhận liên kết</button>
+</div>
+
+<!-- Giao diện đổi quà hiện vật -->
+<div class="gift-screen" id="giftScreen" style="display:none;">
+  <button class="back-btn" id="backGiftBtn">⬅ Quay lại</button>
+  <h2>🎁 Đổi quà hiện vật</h2>
+  <div class="gift-list">
+    <div class="gift-item">
+      <img src="https://i.ibb.co/Wt3n4zK/mouse.jpg" alt="Chuột gaming">
+      <div class="gift-info">
+        <h3>Chuột Gaming</h3>
+        <p>Giá đổi: 500 xu</p>
+        <button class="confirm-btn">Đổi ngay</button>
+      </div>
+    </div>
+    <div class="gift-item">
+      <img src="https://i.ibb.co/fYwHBLt/headphone.jpg" alt="Tai nghe">
+      <div class="gift-info">
+        <h3>Tai nghe Bluetooth</h3>
+        <p>Giá đổi: 1,000 xu</p>
+        <button class="confirm-btn">Đổi ngay</button>
+      </div>
+    </div>
+<div class="gift-item">
+      <img src="https://i.ibb.co/gm4cP4s/keyboard.jpg" alt="Bàn phím">
+      <div class="gift-info">
+        <h3>Bàn phím Cơ</h3>
+        <p>Giá đổi: 1.500 xu</p>
+        <button class="confirm-btn">Đổi ngay</button>
+      </div>
+    </div>
+    <div class="gift-item">
+      <img src="https://i.ibb.co/gm4cP4s/keyboard.jpg" alt="Bàn phím">
+      <div class="gift-info">
+        <h3>Giày Pickleball Lascote</h3>
+        <p>Giá đổi: 2.000 xu</p>
+        <button class="confirm-btn">Đổi ngay</button>
+      </div>
+    </div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 3 triệu">
+  <div class="gift-info">
+    <h3>Bộ quần áo thể thao Pickleball</h3>
+    <p>Giá đổi: 3,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Vợt Pickleball Joola Gen3s</h3>
+    <p>Giá đổi: 4,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 5 triệu">
+  <div class="gift-info">
+    <h3>Vợt Pickleball Joola Gen4</h3>
+    <p>Giá đổi: 5,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Shad Luggage Rack Keeway Vieste-125</h3>
+    <p>Giá đổi: 6,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Shad Voge-SR4-Max</h3>
+    <p>Giá đổi: 7,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Leo Vince GP Corsa Evo 1-into-1 Exhaust System</h3>
+    <p>Giá đổi: 8,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy PIAGGIO LIBERTY 125</h3>
+    <p>Giá đổi: 9,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 10 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Leo Vince LV One Evo Slip-On Muffler</h3>
+    <p>Giá đổi: 10,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy LV One Evo Slip-Ons For KTM RC125 22</h3>
+    <p>Giá đổi: 15,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 20 triệu">
+  <div class="gift-info">
+    <h3>Xe máy YOSHIMURA SUZUKI GSXR 600</h3>
+    <p>Giá đổi: 20,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Akrapovic S-H10SO24-APC Titanium</h3>
+    <p>Giá đổi: 30,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy DUCATI 1299 PANIGALE 15-16</h3>
+    <p>Giá đổi: 40,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 50 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Yamaha YZF-R7 S-Y7R11-HAPT</h3>
+    <p>Giá đổi: 50,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Yoshimura Signature RS-12</h3>
+    <p>Giá đổi: 60,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Xe máy Yamaha R6 2025 Yzf 600 Motorcycle Evolution Titanium</h3>
+    <p>Giá đổi: 70,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Ấn rồng ngọc bích Canada nguyên khối</h3>
+    <p>Giá đổi: 80,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Ấn rồng cửu long thạch anh xanh</h3>
+    <p>Giá đổi: 90,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+<div class="gift-item">
+  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <div class="gift-info">
+    <h3>Tượng rồng đá thạch anh trắng ưu linh</h3>
+    <p>Giá đổi: 100,000 xu</p>
+    <button class="confirm-btn">Đổi ngay</button>
+  </div>
+</div>
+
+  </div>
+</div>
+
+
+
+
+ <div class="recharge-screen" id="rechargeScreen">
+  <button class="back-btn" id="backBtn">⬅ Quay lại</button>
+  <h2>Chọn ngân hàng</h2>
+  <div class="bank-list" id="bankList">
+    <div class="bank-item" data-bank="VCB">
+      <img src="https://i.ibb.co/q3V9Ps2N/logo-ngan-hang-vietcombank-vector-1766.jpg" alt="logo-ngan-hang-vietcombank-vector-1766" border="0">
+      <div>Vietcombank</div>
+    </div>
+    <div class="bank-item" data-bank="MB">
+      <img src="https://i.ibb.co/tp91y065/62ce8018d5cacb6b28727421-MB-bank-logo.jpg" alt="62ce8018d5cacb6b28727421-MB-bank-logo" border="0">
+      <div>MB Bank</div>
+    </div>
+    <div class="bank-item" data-bank="TPB">
+      <img src="https://i.ibb.co/bjQqXKLf/logo-tp-bank.jpg" alt="logo-tp-bank" border="0">
+      <div>TP Bank</div>
+    </div>
+    <div class="bank-item" data-bank="ACB">
+      <img src="https://i.ibb.co/zVkscxRV/logo-acb-inkythuatso-10-10-28-43.jpg" alt="logo-acb-inkythuatso-10-10-28-43" border="0">
+      <div>ACB</div>
+    </div>
+  </div>
+
+  <h2>Nhập số tiền muốn nạp</h2>
+  <input type="number" class="input-amount" id="amountInput" placeholder="Nhập số tiền:">
+
+  <button class="confirm-btn" id="confirmRecharge">Xác nhận</button>
+
+  <div class="payment-info" id="paymentInfo" style="display:none;">
+    <h3>Thông tin thanh toán</h3>
+    <div><strong>Số tiền:</strong> <span id="infoAmount"></span></div>
+    <div><strong>Ngân hàng:</strong> <span id="infoBank"></span></div>
+    <div><strong>Số tài khoản:</strong> <span id="infoAccount">1869354780</span></div>
+    <div><strong>Chủ tài khoản:</strong> <span id="infoName">Bùi Đức Huy</span></div>
+    <div><strong>Nội dung:</strong> <span id="infoNote"></span></div>
+
+    <button class="confirm-btn" id="sendRequestBtn" style="margin-top:15px;display:none;">
+    Gửi yêu cầu nạp tiền
+    </button>
+  </div>
+
+
+  <script>
+
+let selectedBank = null;
+let rechargeHistory = [];
+let generatedOTP = null;
+let otpSent = false;
+let giftHistory = [];
+let currentHistoryType = 'recharge'; // mặc định hiển thị lịch sử nạp
+
+
+    const user = {name: 'KimDogCat', id: '000888', balance: 0}
+    document.getElementById('username').textContent = user.name
+    document.getElementById('userid').textContent = 'ID: ' + user.id
+    document.getElementById('balance').textContent = user.balance.toLocaleString()
+    document.getElementById('avatarText').textContent = user.name.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()
+
+const confirmRecharge = document.getElementById('confirmRecharge');
+const paymentInfo = document.getElementById('paymentInfo');
+const sendRequestBtn = document.getElementById('sendRequestBtn');
+const amountInput = document.getElementById('amountInput');
+const infoBank = document.getElementById('infoBank');
+const infoNote = document.getElementById('infoNote');
+const infoAmount = document.getElementById('infoAmount');
+const confirmBtn = document.getElementById('confirmBtn');
+
+   
+
+const avatar = document.getElementById('avatar')
+const avatarInput = document.getElementById('avatarInput')
+const avatarImg = document.getElementById('avatarImg')
+const avatarText = document.getElementById('avatarText')
+
+avatar.addEventListener('click', () => avatarInput.click())
+avatarInput.addEventListener('change', (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      avatarImg.src = ev.target.result
+      avatarImg.style.display = 'block'
+      avatarText.style.display = 'none'
+    }
+    reader.readAsDataURL(file)
+  }
+})
+
+// Đăng xuất
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      if(confirm('Bạn có chắc muốn đăng xuất không?')){
+        window.location.href = 'about:blank'
+      }
+    })
+
+// Khi bấm xác nhận, mở giao diện nạp
+document.getElementById('addCoin').addEventListener('click', ()=>{
+  
+  // Ẩn giao diện chính, hiện giao diện nạp
+  document.getElementById('mainScreen').style.display = 'none';
+  document.getElementById('rechargeScreen').style.display = 'flex';
+
+});
+
+
+
+// Nút quay lại
+  document.getElementById('backBtn').addEventListener('click', ()=>{
+  document.getElementById('mainScreen').style.display = 'flex';
+  document.getElementById('rechargeScreen').style.display = 'none';
+  document.getElementById('paymentInfo').style.display = 'none';
+  document.getElementById('sendRequestBtn').style.display = 'none';
+});
+
+
+
+// Cấu hình thông tin từng ngân hàng
+const bankAccounts = {
+  VCB: {
+    name: "Trần Quang Anh",
+    account: "1055919982",
+    bankName: "Vietcombank"
+  },
+  MB: {
+    name: "Trần Thanh Tuấn",
+    account: "8539755756964",
+    bankName: "MB Bank"
+  },
+  TPB: {
+    name: "Lê Diễm Nhi",
+    account: "89686666666",
+    bankName: "TP Bank"
+  },
+  ACB: {
+    name: "Phạm Hoàng Đạt",
+    account: "44732797",
+    bankName: "ACB"
+  }
+};
+
+
+
+
+// Chọn ngân hàng
+document.querySelectorAll('.bank-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.bank-item').forEach(i=>i.classList.remove('selected'));
+    item.classList.add('selected');
+    selectedBank = item.dataset.bank;
+  });
+});
+
+// Xác nhận nạp
+document.getElementById('confirmRecharge').addEventListener('click', ()=>{
+  const amount = parseInt(document.getElementById('amountInput').value);
+  if(!selectedBank) return alert("Vui lòng chọn ngân hàng");
+  if(!amount || amount <= 0) return alert("Vui lòng nhập số tiền hợp lệ");
+
+  const bankInfo = bankAccounts[selectedBank];
+  if(!bankInfo) return alert("Ngân hàng không hợp lệ");
+
+// Gán số tiền vào phần hiển thị thông tin thanh toán
+  document.getElementById('paymentInfo').style.display = 'block';
+  document.getElementById('infoAmount').textContent = amount.toLocaleString() + " VND";
+  document.getElementById('infoBank').textContent = selectedBank;
+  document.getElementById('infoAccount').textContent = bankInfo.account;
+  document.getElementById('infoName').textContent = bankInfo.name;
+  document.getElementById('infoNote').textContent = `NAP-${user.id}`;
+  document.getElementById('sendRequestBtn').style.display = 'block';
+
+});
+
+// Gửi yêu cầu nạp tiền
+  document.getElementById('sendRequestBtn').addEventListener('click', ()=>{
+  const amount = parseInt(document.getElementById('amountInput').value);
+  const bankInfo = bankAccounts[selectedBank];
+  alert("Gửi yêu cầu nạp tiền thành công! Hệ thống sẽ xử lý trong ít phút.");
+
+ const coins = Math.floor(amount / 1000);
+
+  setTimeout(()=>{
+    user.balance += coins;
+    document.getElementById('balance').textContent = user.balance.toLocaleString();
+
+// Lưu lịch sử
+    rechargeHistory.unshift({
+      coins,
+      bank: bankInfo.bankName,
+      time: new Date().toLocaleString()
+    });
+
+    alert(`Nạp thành công ${coins} xu.`);
+    document.getElementById('mainScreen').style.display = 'flex';
+    document.getElementById('rechargeScreen').style.display = 'none';
+  }, 10000);
+});
+
+
+
+function openPanel(panel){
+  if(panel === 'home'){
+    document.getElementById('mainScreen').style.display = 'none';
+    document.getElementById('giftScreen').style.display = 'flex';
+  }
+  if(panel === 'games'){
+    document.getElementById('gameList').classList.add('show');
+  }
+  if (panel === 'history') {
+    document.getElementById('mainScreen').style.display = 'none';
+    document.getElementById('historyScreen').style.display = 'flex';
+    renderHistory();
+  }
+  if (panel === 'settings') {
+  document.getElementById('mainScreen').style.display = 'none';
+  document.getElementById('settingsScreen').style.display = 'flex';
+  }
+}
+
+function closeGameList(){
+  document.getElementById('gameList').classList.remove('show');
+}
+
+// Quay lại từ lịch sử
+document.getElementById('backHistoryBtn').addEventListener('click', () => {
+  document.getElementById('mainScreen').style.display = 'flex';
+  document.getElementById('historyScreen').style.display = 'none';
+});
+
+// Quay lại từ cài đặt
+document.getElementById('backSettingsBtn').addEventListener('click', () => {
+  document.getElementById('mainScreen').style.display = 'flex';
+  document.getElementById('settingsScreen').style.display = 'none';
+});
+
+
+document.getElementById('tabRecharge').addEventListener('click', () => {
+  currentHistoryType = 'recharge';
+  renderHistory();
+});
+
+document.getElementById('tabGift').addEventListener('click', () => {
+  currentHistoryType = 'gift';
+  renderHistory();
+});
+
+// Lưu và hiển thị lịch sử
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  let data = [];
+  
+
+if (currentHistoryType === 'recharge') {
+    data = rechargeHistory.map(item => ({
+      detail: `${item.coins.toLocaleString()} xu`,
+      time: item.time
+    }));
+  } else {
+    data = giftHistory.map(item => ({
+      detail: `Đổi quà: ${item.name} (${item.price.toLocaleString()} xu)`,
+      time: item.time
+    }));
+  }
+
+ if (data.length === 0) {
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:10px;">
+      Chưa có ${currentHistoryType === 'recharge' ? 'lịch sử nạp tiền' : 'lịch sử đổi thưởng'}
+    </div>`;
+    return;
+  }
+
+ // Sắp xếp mới nhất trước
+  data.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+
+ list.innerHTML = data.map(h =>
+    `<div class="history-item">
+      <strong>${h.detail}</strong>
+      <div style="color:var(--muted);font-size:12px;">${h.time}</div>
+    </div>`
+  ).join('');
+
+
+
+}
+
+// Nút xác nhận liên kết
+  document.getElementById('confirmLinkBtn').addEventListener('click', () => {
+  const phoneInput = document.getElementById('linkPhone');
+  const emailInput = document.getElementById('linkEmail');
+  const otpSection = document.getElementById('otpSection');
+  const confirmBtn = document.getElementById('confirmLinkBtn');
+
+  const phone = phoneInput.value.trim();
+  const email = emailInput.value.trim();
+
+// Kiểm tra định dạng số điện thoại (10 chữ số, không chữ cái)
+  if (!/^\d{10}$/.test(phone)) {
+    alert("Số điện thoại phải gồm đúng 10 chữ số và không chứa ký tự chữ!");
+    return;
+  }
+
+  // Kiểm tra định dạng Gmail
+  if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) {
+    alert("Email phải có dạng hợp lệ, ví dụ: tenban@gmail.com");
+    return;
+  }
+
+ // Nếu chưa gửi OTP
+  if (!otpSent) {
+    if (!phone || !email) {
+      alert("Vui lòng nhập đầy đủ số điện thoại và email!");
+      return;
+    }
+
+    // Tạo OTP ngẫu nhiên 6 số
+    generatedOTP = Math.floor(100000 + Math.random() * 900000);
+    otpSent = true;
+
+    // Hiển thị form nhập OTP
+    document.getElementById('otpSection').style.display = 'block';
+
+    // Thông báo gửi OTP
+    alert(`Mã OTP đã được gửi tới:\n📱 SĐT: ${phone}\n`);
+
+    // Đổi nội dung nút
+    confirmBtn.textContent = "Xác thực OTP";
+    return;
+  }
+
+// Nếu đang ở bước nhập OTP
+  const enteredOTP = document.getElementById('otpCode').value.trim();
+  if (enteredOTP == generatedOTP) {
+    alert("✅ Liên kết tài khoản thành công!");
+    otpSent = false;
+    generatedOTP = null;
+
+
+ // Khóa ô nhập SĐT và Email
+    phoneInput.readOnly = true;
+    emailInput.readOnly = true;
+
+// Ẩn nút xác nhận và form OTP
+    confirmBtn.style.display = 'none';
+    otpSection.style.display = 'none';
+
+
+// Quay về màn hình chính sau khi xác nhận
+  document.getElementById('mainScreen').style.display = 'flex';
+  document.getElementById('settingsScreen').style.display = 'none';
+
+  } 
+  else {
+    alert("❌ Mã OTP không đúng, vui lòng thử lại!");
+  } 
+});
+
+// Quay lại từ đổi quà
+document.getElementById('backGiftBtn').addEventListener('click', () => {
+  document.getElementById('mainScreen').style.display = 'flex';
+  document.getElementById('giftScreen').style.display = 'none';
+});
+
+// Xử lý nút đổi quà
+document.querySelectorAll('#giftScreen .confirm-btn').forEach((btn, index) => {
+  btn.addEventListener('click', () => {
+
+    const giftItems = [
+        {name: "Chuột Gaming", price: 500},
+        {name: "Tai nghe Bluetooth", price: 1000},
+        {name: "Bàn phím Cơ", price: 1500000},
+	{name: "Giày Pickleball Lascote", price: 2000},
+	{name: "Bộ quần áo thể thao Pickleball", price: 3000},
+	{name: "Vợt Pickleball Joola Gen3s", price: 4000},
+	{name: "Vợt Pickleball Joola Gen4", price: 5000},
+	{name: "Xe máy Shad Luggage Rack Keeway Vieste-125", price: 6000},
+	{name: "Xe máy Shad Voge-SR4-Max", price: 7000},
+	{name: "Xe máy Leo Vince GP Corsa Evo 1-into-1 Exhaust System", price: 8000},
+	{name: "Xe máy PIAGGIO LIBERTY 125", price: 9000},
+	{name: "Xe máy Leo Vince LV One Evo Slip-On Muffler", price: 10000},
+	{name: "Xe máy LV One Evo Slip-Ons For KTM RC125 22", price: 15000},
+	{name: "Xe máy YOSHIMURA SUZUKI GSXR 600", price: 20000},
+	{name: "Xe máy Akrapovic S-H10SO24-APC Titanium", price: 30000},
+	{name: "Xe máy DUCATI 1299 PANIGALE 15-16", price: 40000},
+	{name: "Xe máy Yamaha YZF-R7 S-Y7R11-HAPT", price: 50000},
+	{name: "Xe máy Yoshimura Signature RS-12", price: 60000},
+	{name: "Xe máy Yamaha R6 2025 Yzf 600 Motorcycle Evolution Titanium", price: 70000},
+	{name: "Ấn rồng ngọc bích Canada nguyên khối", price: 80000},
+	{name: "Ấn rồng cửu long thạch anh xanh", price: 90000},
+	{name: "Tượng rồng đá thạch anh trắng ưu linh", price: 100000}
+    ];
+
+
+    // Lấy giá đổi từ text
+    const priceText = btn.parentElement.querySelector('p').textContent;
+    const price = parseInt(priceText.replace(/[^0-9]/g, ''));
+
+    const gift = giftItems[index];
+    if (user.balance < price) {
+      alert("Số dư không đủ để đổi quà này!");
+      return;
+    }
+
+    if (confirm(`Bạn có chắc muốn đổi "${btn.parentElement.querySelector('h3').textContent}" với giá ${price.toLocaleString()} xu không?`)) {
+      user.balance -= price;
+      document.getElementById('balance').textContent = user.balance.toLocaleString();
+      giftHistory.unshift({
+        name: gift.name,
+        price: gift.price,
+        time: new Date().toLocaleString()
+      });
+      alert("Đổi quà thành công! Quà sẽ được gửi đến bạn sớm.");
+    }
+  });
+});
+
+// Hiển thị lịch sử đổi quà khi bấm vào mục Lịch sử
+document.getElementById('historyBtn').addEventListener('click', () => {
+  const historyContainer = document.getElementById('historyContent');
+  historyContainer.innerHTML = '';
+
+  if (giftHistory.length === 0) {
+    historyContainer.innerHTML = '<p>Chưa có lịch sử đổi quà nào.</p>';
+  } else {
+    giftHistory.forEach(item => {
+      const entry = document.createElement('div');
+      entry.className = 'history-item';
+      entry.innerHTML = `
+        <strong>${item.name}</strong> - ${item.price.toLocaleString()} xu<br>
+        <small>${item.time}</small>
+      `;
+      historyContainer.appendChild(entry);
+    });
+  }
+});
+
+  </script>
+</body>
+</html>
