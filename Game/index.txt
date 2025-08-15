@@ -450,6 +450,7 @@
         <p>Vòng quay rau củ!</p>
       </div>
     </div>
+
     <div class="game-card">
       <div class="game-img" style="background-image:url('<a href="https://imgbb.com/"><img src="https://i.ibb.co/tPBch1M3/result-result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-1.jpg" alt="result-result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-1" border="0"></a>');"></div>
       <div class="game-info">
@@ -457,6 +458,7 @@
         <p>Săn Jackpot, thử vận may!</p>
       </div>
     </div>
+
     <div class="game-card">
       <div class="game-img" style="background-image:url('<a href="https://imgbb.com/"><img src="https://i.ibb.co/cSnQxW3J/result-z6900446085771-3cc854fb75f1290aeef0b58a71f49f06.jpg" alt="result-z6900446085771-3cc854fb75f1290aeef0b58a71f49f06" border="0"></a>');"></div>
       <div class="game-info">
@@ -464,6 +466,7 @@
         <p>Lên sàn đấu cùng Tom vs Tyson!</p>
       </div>
     </div>
+
     <div class="game-card">
       <div class="game-img" style="background-image:url('<a href="https://imgbb.com/"><img src="https://i.ibb.co/jv6dtns4/result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-3.jpg" alt="result-z6900001586411-a02beaa653f928f23f7dc6260b7f17ae-3" border="0"></a>');"></div>
       <div class="game-info">
@@ -471,6 +474,7 @@
         <p>Bay lên nào!</p>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -681,7 +685,7 @@
   </div>
 </div>
 <div class="gift-item">
-  <img src="https://i.ibb.co/x8ZfYzJ/cash.jpg" alt="Thẻ đổi thưởng 100 triệu">
+  <img src="https://i.ibb.co/20XXjw2v/tuong-rong-thach-anh-trang-vip-1.jpg" alt="Thẻ đổi thưởng 100 triệu">
   <div class="gift-info">
     <h3>Tượng rồng đá thạch anh trắng ưu linh</h3>
     <p>Giá đổi: 100,000 xu</p>
@@ -692,7 +696,7 @@
   </div>
 </div>
 
-
+<a href="https://ibb.co/JWXXzNLv"><img src="https://i.ibb.co/20XXjw2v/tuong-rong-thach-anh-trang-vip-1.jpg" alt="tuong-rong-thach-anh-trang-vip-1" border="0"></a>
 
 
  <div class="recharge-screen" id="rechargeScreen">
