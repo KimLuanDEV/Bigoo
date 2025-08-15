@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -388,6 +389,43 @@
 }
 
 
+/* Giao diện nút đổi tên */
+.btn-us {
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s;
+}
+.btn-us:hover {
+  background: linear-gradient(135deg, #5AA0F2, #4689D1);
+  transform: scale(1.05);
+}
+
+
+/* Giao diện nút đổi id */
+.btn-id {
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s;
+}
+.btn-id:hover {
+  background: linear-gradient(135deg, #5AA0F2, #4689D1);
+  transform: scale(1.05);
+}
+
+
+
 </style>
 </head>
 
@@ -400,14 +438,26 @@
       <div class="profile">
         <div class="avatar" id="avatar">
   <img id="avatarImg" src="" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:none;">
-  <span id="avatarText"></span>
+  <span id="avatarText">U</span>
 </div>
 <input type="file" id="avatarInput" accept="image/*" style="display:none;">
 
 
+
+
         <div class="user-info">
-          <div class="name" id="username">KimDogCat</div>
-          <div class="id" id="userid">ID: 000888</div>
+          <div class="name" id="username">User </div>
+          <div class="id" id="userid">ID:</div>
+
+<div>
+   <button id="changeNameBtn" class="btn-id">Đổi tên</button>
+   <button id="changeIdBtn" class="btn-id">Đổi ID mới</button>
+</div>
+
+
+
+
+
         </div>
       </div>
 
@@ -741,6 +791,32 @@
 
   <script>
 
+// Tạo ID
+function generateRandomID(length = 8) {
+  const chars = "0123456789";
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return id;
+}
+
+// 🔥 Kiểm tra localStorage, nếu chưa có thì tạo ID mới
+let userId = localStorage.getItem("userId");
+if (!userId) {
+  userId = generateRandomID(8);
+  localStorage.setItem("userId", userId);
+}
+
+document.getElementById("changeIdBtn").addEventListener("click", () => {
+  const newId = generateRandomID(8);
+  localStorage.setItem("userId", newId);
+  user.id = newId;
+  document.getElementById("userid").textContent = "ID: " + newId;
+  alert("Bạn đã đổi sang ID mới: " + newId);
+});
+
+
 let selectedBank = null;
 let rechargeHistory = [];
 let generatedOTP = null;
@@ -749,11 +825,19 @@ let giftHistory = [];
 let currentHistoryType = 'recharge'; // mặc định hiển thị lịch sử nạp
 
 
-    const user = {name: 'KimDogCat', id: '000888', balance: 0}
+    const user = {name: 'User', id: userId, balance: 0}
+    const avatarImg = document.getElementById('avatarImg')
+    const avatarText = document.getElementById('avatarText')
+
+    avatarText.textContent = user.name[0].toUpperCase();
+
     document.getElementById('username').textContent = user.name
     document.getElementById('userid').textContent = 'ID: ' + user.id
     document.getElementById('balance').textContent = user.balance.toLocaleString()
     document.getElementById('avatarText').textContent = user.name.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()
+    
+
+
 
 const confirmRecharge = document.getElementById('confirmRecharge');
 const paymentInfo = document.getElementById('paymentInfo');
@@ -768,8 +852,7 @@ const confirmBtn = document.getElementById('confirmBtn');
 
 const avatar = document.getElementById('avatar')
 const avatarInput = document.getElementById('avatarInput')
-const avatarImg = document.getElementById('avatarImg')
-const avatarText = document.getElementById('avatarText')
+
 
 avatar.addEventListener('click', () => avatarInput.click())
 avatarInput.addEventListener('change', (e) => {
@@ -784,6 +867,52 @@ avatarInput.addEventListener('change', (e) => {
     reader.readAsDataURL(file)
   }
 })
+
+
+
+// Nút đổi tên - inline edit
+document.getElementById('changeNameBtn').addEventListener('click', () => {
+  const usernameEl = document.getElementById('username');
+
+  // Nếu đang edit rồi thì bỏ qua
+  if (usernameEl.querySelector('input')) return;
+
+  const currentName = user.name;
+
+  // Tạo ô input thay thế
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentName;
+  input.className = "border rounded px-2 py-1 text-sm";
+
+  usernameEl.textContent = ""; // Xóa nội dung cũ
+  usernameEl.appendChild(input);
+  input.focus();
+
+  // Khi nhấn Enter hoặc blur thì lưu tên mới
+  const saveName = () => {
+    const newName = input.value.trim() || currentName;
+    user.name = newName;
+    usernameEl.textContent = newName;
+
+    // Nếu chưa có avatar ảnh thì cập nhật chữ viết tắt
+    if (avatarImg.style.display === 'none') {
+      document.getElementById('avatarText').textContent = newName
+        .split(' ')
+        .map(s => s[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+    }
+  };
+
+  input.addEventListener('blur', saveName);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      saveName();
+    }
+  });
+});
 
 // Đăng xuất
     document.getElementById('logoutBtn').addEventListener('click', ()=>{
@@ -1131,6 +1260,11 @@ document.getElementById('historyBtn').addEventListener('click', () => {
     });
   }
 });
+
+
+
+
+
 
   </script>
 </body>
