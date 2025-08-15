@@ -442,6 +442,34 @@
 }
 
 
+/* Giao diện ví tiền */
+.wallet-screen {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.wallet-balance-box {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.wallet-balance {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+
+
 </style>
 </head>
 
@@ -467,21 +495,14 @@
    <button id="changeNameBtn" class="btn-id">Đổi tên</button>
    <button id="changeIdBtn" class="btn-id">Đổi ID mới</button>
 </div>
-
         </div>
       </div>
 
-      <div class="wallet" role="region" aria-label="Ví tiền">
-        <div>
-          <div style="font-size:12px;color:var(--muted)">Số dư</div>
-          <div class="amount" id="balance">0</div>
-        </div>
-        <div style="text-align:right">
-          <button id="addCoin" style="margin-top:6px;padding:6px 8px;border-radius:8px;border:0;background:#0ea5a4;color:#022;font-weight:700;cursor:pointer">Nạp</button>
-        </div>
-      </div>
+      <br>
 
       <nav class="nav" aria-label="Điều hướng">
+
+        <button onclick="openPanel('wallet')">💳 Ví tiền</button>
         <button onclick="openPanel('home')">🎁 Đổi quà hiện vật</button>
         <button onclick="openPanel('games')">🎮 Trung tâm trò chơi</button>
         <button onclick="openPanel('history')">📜 Lịch sử</button>
@@ -570,6 +591,23 @@
 
 <!-- Nút xác nhận -->
   <button class="confirm-btn" id="confirmLinkBtn" style="margin-top:15px;">Xác nhận liên kết</button>
+</div>
+
+
+<!-- Giao diện ví tiền -->
+<div class="wallet-screen" id="walletScreen" style="display:none;" role="region" aria-label="Ví tiền">
+  <button class="back-btn" id="backWalletBtn">⬅ Quay lại</button>
+  <h2>💳 Ví tiền của tôi</h2>
+
+  <div class="wallet-balance-box">
+    <div>Số dư hiện tại:</div>
+    <div class="wallet-balance"><span id="balance">0</span> xu</div>
+  </div>
+
+  <div style="display:flex; gap:10px; margin:15px 0;">
+    <button class="confirm-btn" id="walletRechargeBtn">💰 Nạp xu</button>
+    
+  </div>
 </div>
 
 <!-- Giao diện đổi quà hiện vật -->
@@ -883,9 +921,10 @@ avatarInput.addEventListener('change', (e) => {
 })
 
 
-
 // Nút đổi tên - inline edit
 document.getElementById('changeNameBtn').addEventListener('click', () => {
+
+ 
   const usernameEl = document.getElementById('username');
 
   // Nếu đang edit rồi thì bỏ qua
@@ -908,6 +947,7 @@ document.getElementById('changeNameBtn').addEventListener('click', () => {
     const newName = input.value.trim() || currentName;
     user.name = newName;
     usernameEl.textContent = newName;
+    
 
     // Nếu chưa có avatar ảnh thì cập nhật chữ viết tắt
     if (avatarImg.style.display === 'none') {
@@ -935,14 +975,16 @@ document.getElementById('changeNameBtn').addEventListener('click', () => {
       }
     })
 
-// Khi bấm xác nhận, mở giao diện nạp
-document.getElementById('addCoin').addEventListener('click', ()=>{
 
-  // Ẩn giao diện chính, hiện giao diện nạp
-  document.getElementById('mainScreen').style.display = 'none';
-  document.getElementById('rechargeScreen').style.display = 'flex';
-
+// Nút Nạp xu trong ví tiền
+document.getElementById("walletRechargeBtn").addEventListener("click", function() {
+    // Ẩn giao diện ví
+    document.getElementById("walletScreen").style.display = "none";
+    // Hiện giao diện nạp tiền
+    document.getElementById("rechargeScreen").style.display = "flex";
+    document.getElementById('mainScreen').style.display = 'none';
 });
+
 
 
 
@@ -1056,7 +1098,17 @@ function openPanel(panel){
   document.getElementById('mainScreen').style.display = 'none';
   document.getElementById('settingsScreen').style.display = 'flex';
   }
+  if(panel === 'wallet'){
+  document.getElementById("walletScreen").style.display = "flex";
+  document.getElementById('mainScreen').style.display = 'none';
+  }
 }
+
+// Quay lại từ ví tiền
+document.getElementById("backWalletBtn").onclick = function(){
+  document.getElementById("walletScreen").style.display = "none";
+  document.getElementById("mainScreen").style.display = "flex";
+};
 
 function closeGameList(){
   document.getElementById('gameList').classList.remove('show');
@@ -1274,6 +1326,7 @@ document.getElementById('historyBtn').addEventListener('click', () => {
     });
   }
 });
+
 
 
 
