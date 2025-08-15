@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -166,6 +164,8 @@
   gap: 24px; /* khoảng cách đẹp hơn */
   padding-bottom: 20px;
 }
+
+
 
 .game-card {
   background: #1c2333;
@@ -441,17 +441,6 @@
   box-shadow: 0 0 4px rgba(74,144,226,0.6);
 }
 
-/* Giao diện nhúng game*/
-   
-.game-container {
-      margin: 20px auto;
-      text-align: center;
-      width: 650px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      display: none; /* Ẩn mặc định */
-    }
-
 
 </style>
 </head>
@@ -460,21 +449,25 @@
 
   <div class="app" role="application" aria-label="Trung tâm trò chơi">
     <aside class="sidebar" id="mainScreen" aria-label="Thanh bên người dùng">
+	
+
       <div class="profile">
-      <div class="avatar" id="avatar">
-      <img id="avatarImg" src="" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:none;">
-      <span id="avatarText">U</span>
-    </div>
-      <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+        <div class="avatar" id="avatar">
+  <img id="avatarImg" src="" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:none;">
+  <span id="avatarText">U</span>
+</div>
+<input type="file" id="avatarInput" accept="image/*" style="display:none;">
 
         <div class="user-info">
-        <div class="name" id="username">User </div>
-        <div class="id" id="userid">ID:</div>
+          <div class="name" id="username">User </div>
+          <div class="id" id="userid">ID:</div>
+       
 
 <div>
    <button id="changeNameBtn" class="btn-id">Đổi tên</button>
    <button id="changeIdBtn" class="btn-id">Đổi ID mới</button>
 </div>
+
         </div>
       </div>
 
@@ -561,7 +554,7 @@
 <div class="settings-screen" id="settingsScreen" style="display:none;">
   <button class="back-btn" id="backSettingsBtn">⬅ Quay lại</button>
   <h2>🔗 Liên kết tài khoản</h2>
-  
+
   <label>Số điện thoại</label>
   <input type="text" id="linkPhone" class="input-amount" placeholder="Nhập số điện thoại">
 
@@ -808,36 +801,9 @@
 
 
 
-<!-- Khung hiển thị game -->
-<div class="game-container" id="gameContainer">
-  <iframe id="gameFrame" src="file:///D:/Bigo/Game/game-greedy.html" width="650" height="500" style="border:none;border-radius:16px;"></iframe>
-</div>
-
 
   <script>
 
-// Lấy phần tử
-const gameCards = document.querySelectorAll(".game-card");
-const gameContainer = document.getElementById("gameContainer");
-const gameFrame = document.getElementById("gameFrame");
-
-// Gắn sự kiện cho Greedy (game-card đầu tiên)
-gameCards[0].addEventListener("click", () => {
-  gameFrame.src = "file:///D:/Bigo/Game/game-greedy.html";  // <-- thay bằng file game của bạn
-  gameContainer.style.display = "block";
-  document.getElementById("gameList").classList.remove("show"); // ẩn danh sách game
-});
-
-// Nếu muốn thêm close game:
-const closeBtnGame = document.createElement("button");
-closeBtnGame.textContent = "✖ Đóng game";
-closeBtnGame.style.cssText = "margin-top:10px;padding:8px 14px;background:#ef4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;";
-gameContainer.appendChild(closeBtnGame);
-
-closeBtnGame.addEventListener("click", () => {
-  gameFrame.src = "";
-  gameContainer.style.display = "none";
-});
 
 // Tạo ID
 function generateRandomID(length = 8) {
@@ -883,7 +849,7 @@ let currentHistoryType = 'recharge'; // mặc định hiển thị lịch sử n
     document.getElementById('userid').textContent = 'ID: ' + user.id
     document.getElementById('balance').textContent = user.balance.toLocaleString()
     document.getElementById('avatarText').textContent = user.name.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()
-    
+
 
 
 
@@ -896,7 +862,7 @@ const infoNote = document.getElementById('infoNote');
 const infoAmount = document.getElementById('infoAmount');
 const confirmBtn = document.getElementById('confirmBtn');
 
-   
+
 
 const avatar = document.getElementById('avatar')
 const avatarInput = document.getElementById('avatarInput')
@@ -971,7 +937,7 @@ document.getElementById('changeNameBtn').addEventListener('click', () => {
 
 // Khi bấm xác nhận, mở giao diện nạp
 document.getElementById('addCoin').addEventListener('click', ()=>{
-  
+
   // Ẩn giao diện chính, hiện giao diện nạp
   document.getElementById('mainScreen').style.display = 'none';
   document.getElementById('rechargeScreen').style.display = 'flex';
@@ -1123,7 +1089,7 @@ document.getElementById('tabGift').addEventListener('click', () => {
 function renderHistory() {
   const list = document.getElementById('historyList');
   let data = [];
-  
+
 
 if (currentHistoryType === 'recharge') {
     data = rechargeHistory.map(item => ({
